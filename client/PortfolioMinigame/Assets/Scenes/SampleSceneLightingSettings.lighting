@@ -9,7 +9,7 @@ LightingSettings:
   m_Name: SampleSceneLightingSettings
   serializedVersion: 2
   m_GIWorkflowMode: 0
-  m_EnableBakedLightmaps: 1
+  m_EnableBakedLightmaps: 0
   m_EnableRealtimeLightmaps: 0
   m_RealtimeEnvironmentLighting: 0
   m_BounceScale: 1
@@ -17,7 +17,7 @@ LightingSettings:
   m_IndirectOutputScale: 1
   m_UsingShadowmask: 0
   m_BakeBackend: 2
-  m_LightmapMaxSize: 512
+  m_LightmapMaxSize: 2048
   m_BakeResolution: 32
   m_Padding: 2
   m_TextureCompression: 1
