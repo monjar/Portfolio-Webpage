@@ -24,6 +24,8 @@ public class CarController : MonoBehaviour
     public Transform frontTransform;
     public Transform backTransform;
     public Animator animator;
+    public Joystick rightJoystick;
+    public Joystick leftJoystick;
     private float moveInput;
     private float turnInput;
     private bool isGrounded;
@@ -31,27 +33,24 @@ public class CarController : MonoBehaviour
     private bool isFrontGrounded;
     private bool isCollided;
     private Vector3 motorOffset;
+    private float touchVertAxis;
+    private bool isTouchMovingVert = false;
+    private float touchHoriAxis;
+    private bool isTouchMovingHori = false;
 
     private void Start()
     {
         motorRigidbody.transform.parent = null;
         isCollided = false;
     }
-
-    private void OnCollisionEnter(Collision other)
-    {
-        isCollided = true;
-    }
-
-    private void OnCollisionExit(Collision other)
-    {
-        isCollided = false;
-    }
-
+    
     private void Update()
     {
-        moveInput = Input.GetAxisRaw("Vertical");
-        turnInput = Input.GetAxisRaw("Horizontal");
+        
+        var vertAxis = leftJoystick.isActiveAndEnabled ? leftJoystick.Vertical : Input.GetAxisRaw("Vertical");
+        var horiAxis = rightJoystick.isActiveAndEnabled ? rightJoystick.Horizontal : Input.GetAxisRaw("Horizontal");
+        moveInput = vertAxis;
+        turnInput = horiAxis;
         moveInput *= moveInput > 0 ? forwardSpeed : reverseSpeed;
         turningWheels.ForEach(w =>
         {
@@ -60,33 +59,26 @@ public class CarController : MonoBehaviour
                     w.localRotation.z),
                 Time.deltaTime * wheelTurnRoughness);
 
-            // w.rotation.r
-
-
-            // w.localRotation = Quaternion.Euler(w.localRotation.x , turnInput * wheelTurnAngle,
-            //     w.localRotation.z);
         });
-        animator.SetFloat("WheelSpeed",  motorRigidbody.velocity.magnitude/2 * Vector3.Dot(motorRigidbody.velocity , transform.forward) );
+        animator.SetFloat("WheelSpeed",
+            motorRigidbody.velocity.magnitude / 2 * Vector3.Dot(motorRigidbody.velocity, transform.forward));
         body.localRotation = Quaternion.Lerp(body.localRotation,
             Quaternion.Euler(body.localRotation.x, body.localRotation.y,
-                turnInput * bodyTurnAngle * Input.GetAxis("Vertical")),
+                turnInput * bodyTurnAngle * vertAxis),
             Time.deltaTime * bodyTurnRoughness);
-        // body.localRotation= Quaternion.Euler(body.localRotation.x , body.localRotation.y,
-        //     turnInput * bodyTurnAngle);
-        // wheels.ForEach(w => { w.Rotate(5, 0, 0); });
+ 
         transform.position = motorRigidbody.transform.position;
-        var newRotation = turnInput * turnSpeed * Time.deltaTime * Input.GetAxis("Vertical");
+        var newRotation = turnInput * turnSpeed * Time.deltaTime * vertAxis;
 
         transform.Rotate(0, newRotation, 0, Space.World);
-        // transform.RotateAround(motorRigidbody.transform.position, Vector3.up, newRotation);
-        RaycastHit hitFront;
-        isFrontGrounded = Physics.Raycast(frontTransform.position, -frontTransform.up, out hitFront,
-            raycastGroundDistance,
-            maskGroundLayer);
-
-        RaycastHit hitRear;
-        isRearGrounded = Physics.Raycast(backTransform.position, -backTransform.up, out hitRear, raycastGroundDistance,
-            maskGroundLayer);
+        // RaycastHit hitFront;
+        // isFrontGrounded = Physics.Raycast(frontTransform.position, -frontTransform.up, out hitFront,
+        //     raycastGroundDistance,
+        //     maskGroundLayer);
+        //
+        // RaycastHit hitRear;
+        // isRearGrounded = Physics.Raycast(backTransform.position, -backTransform.up, out hitRear, raycastGroundDistance,
+        //     maskGroundLayer);
         RaycastHit hit;
         isGrounded = Physics.Raycast(transform.position, -transform.up, out hit, raycastGroundDistance,
             maskGroundLayer);
