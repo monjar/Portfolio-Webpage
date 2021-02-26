@@ -26,8 +26,9 @@ public class FollowCameraController : MonoBehaviour
         }
         else if (followMode == CameraFollowMode.TOP_DOWN)
         {
-            transform.position =
-                Vector3.Lerp(transform.position, carTransform.position + initialOffset, roughness * Time.deltaTime);
+            // transform.position =
+            //     Vector3.Lerp(transform.position, carTransform.position + initialOffset, roughness * Time.deltaTime);
+            transform.position = carTransform.position + initialOffset;
             transform.LookAt(carTransform);
         }
     }
